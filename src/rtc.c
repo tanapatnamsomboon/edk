@@ -18,9 +18,9 @@ void rtc_get_time(uint8_t* sec, uint8_t* min, uint8_t* hour, uint8_t* date, uint
     i2c_start();
     i2c_write(DS1307_ADDR | 1);
 
-    *sec   = bcd_to_dec(i2c_read_ack());
+    *sec   = bcd_to_dec(i2c_read_ack() & 0x7F);
     *min   = bcd_to_dec(i2c_read_ack());
-    *hour  = bcd_to_dec(i2c_read_ack());
+    *hour  = bcd_to_dec(i2c_read_ack() & 0x3F);
     i2c_read_ack();
     *date  = bcd_to_dec(i2c_read_ack());
     *month = bcd_to_dec(i2c_read_ack());
@@ -31,12 +31,12 @@ void rtc_get_time(uint8_t* sec, uint8_t* min, uint8_t* hour, uint8_t* date, uint
 
 void rtc_set_time(uint8_t sec, uint8_t min, uint8_t hour, uint8_t date, uint8_t month, uint8_t year) {
     i2c_start();
-    i2c_write(0xD0);
+    i2c_write(DS1307_ADDR);
     i2c_write(0x00);
 
-    i2c_write(dec_to_bcd(sec));
+    i2c_write(dec_to_bcd(sec) & 0x7F);
     i2c_write(dec_to_bcd(min));
-    i2c_write(dec_to_bcd(hour));
+    i2c_write(dec_to_bcd(hour) & 0x3F);
     i2c_write(0x01);
     i2c_write(dec_to_bcd(date));
     i2c_write(dec_to_bcd(month));

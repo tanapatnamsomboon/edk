@@ -47,4 +47,14 @@
 #define COL2 PD6
 #define COL3 PD7
 
+// --- Ultrasonic Configuration ---
+#define UTRIG      PC0
+#define UTRIG_PORT PORTC
+#define UTRIG_PIN  PINC
+#define UTRIG_DDR  DDRC
+#define UECHO      PC1
+#define UECHO_PORT PORTC
+#define UECHO_PIN  PINC
+#define UECHO_DDR  DDRC
+
 #endif // CONFIG_H

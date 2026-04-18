@@ -1,3 +1,9 @@
 CompileFlags:
-  Add: ["--target=avr", "-I/usr/lib/avr/include"]
-  Remove: [-mmcu=*, -fno-fat-lto-objects]
+  Add:
+    - "--target=avr"
+    - "-I/usr/lib/avr/include"
+    - "-Iinclude"
+    - "-mmcu=atmega328p"
+  Remove:
+    - "-mmcu=*"
+    - "-fno-fat-lto-objects"

@@ -1,34 +1,21 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "lcd.h"
-#include "rtc.h"
-#include "i2c.h"
+#include "ultrasonic.h"
 
 int main(void) {
     lcd_init();
-    i2c_init();
+    ultrasonic_init();
 
-    uint8_t sec, min, hour, date, month, year;
-    char date_buffer[20];
-    char time_buffer[20];
-
-    rtc_set_time(0, 10, 15, 18, 4, 26);
+    char buffer[16];
 
     while (1) {
-        rtc_get_time(&sec, &min, &hour, &date, &month, &year);
-
-        sprintf(date_buffer, "Date: %02d/%02d/20%02d", date, month, year);
-        sprintf(time_buffer, "Time: %02d:%02d:%02d", hour, min, sec);
-
+        uint16_t dist = ultrasonic_measure();
         lcd_clear();
-        lcd_gotoxy(0, 0);
-        lcd_display(date_buffer);
-        lcd_gotoxy(0, 1);
-        lcd_display(time_buffer);
-
-        // lcd_clear();
-        // lcd_display("Hello, World!");
+        itoa(dist, buffer, 10);
+        lcd_display(buffer);
         _delay_ms(500);
     }
 
