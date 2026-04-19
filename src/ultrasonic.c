@@ -23,7 +23,7 @@ uint16_t ultrasonic_measure(void) {
         if (timeout > 30000) return 0;
     }
 
-    TCNT1 = 0;
+    TCCR1A = 0;
     TCCR1B = 0;
     TIMSK1 = 0;
     TCNT1 = 0;
@@ -37,6 +37,5 @@ uint16_t ultrasonic_measure(void) {
     }
 
     TCCR1B = 0;
-
     return TCNT1 / 58;
 }

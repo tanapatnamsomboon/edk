@@ -23,9 +23,7 @@ int main(void) {
     timer_wait_ms(1000);
     lcd_clear();
     while (1) {
-        cli();
         distance = ultrasonic_measure();
-        sei();
         sprintf(buffer, "Dist: %3u cm", distance);
 
         lcd_gotoxy(0, 0);

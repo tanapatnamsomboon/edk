@@ -7,7 +7,7 @@ volatile uint16_t target_overflows = 0;
 ISR(TIMER1_OVF_vect) {
     overflow_count++;
     if (overflow_count >= target_overflows) {
-        TCCR1B = 0;
+        TCCR0B = 0;
         timer_done = 1;
     }
 }
@@ -16,23 +16,24 @@ void timer_delay_ms(uint16_t milliseconds) {
     timer_done  = 0;
     overflow_count = 0;
 
-    target_overflows = (milliseconds / 50) + 1;
+    target_overflows = (uint32_t)(milliseconds * 1000UL / 256) + 1;
 
-    TCCR1A = 0;
-    TCNT1  = 65536 - (milliseconds * 1000 / target_overflows);
-
-    TIMSK1 |= (1 << TOIE1);
-    TCCR1B |= (1 << CS11);
+    TCCR0A = 0;
+    TCNT0  = 0;
+    TIMSK0 |= (1 << TOIE0);
+    TCCR0B = (1 << CS01);
 }
 
 void timer_delay_us(uint16_t microseconds) {
-    TCCR1B = 0;
-    TCCR1A = 0;
-    TCNT1  = 65536 - microseconds;
+    timer_done     = 0;
+    overflow_count = 0;
 
-    TIFR1  |= (1 << TOV1);
-    TIMSK1 |= (1 << TOIE1);
-    TCCR1B |= (1 << CS11);
+    target_overflows = (microseconds / 256) + 1;
+
+    TCCR0A = 0;
+    TCNT0  = 256 - (microseconds % 256);
+    TIMSK0 |= (1 << TOIE0);
+    TCCR0B = (1 << CS01);
 }
 
 void timer_wait_ms(uint16_t milliseconds) {
@@ -42,13 +43,13 @@ void timer_wait_ms(uint16_t milliseconds) {
 }
 
 void timer_wait_us(uint16_t microseconds) {
-    TCCR1B = 0;
-    TCCR1A = 0;
-    TCNT1  = 65536 - microseconds;
+    TCCR0B = 0;
+    TCCR0A = 0;
+    TCNT0  = 256 - (microseconds & 0xFF);
 
-    TIFR1  |= (1 << TOV1);
-    TCCR1B |= (1 << CS11);
+    TIFR0  |= (1 << TOV0);
+    TCCR0B  = (1 << CS01);
 
-    while (!(TIFR1 & (1 << TOV1)));
-    TCCR1B = 0;
+    while (!(TIFR0 & (1 << TOV0)));
+    TCCR0B = 0;
 }
