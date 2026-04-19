@@ -4,22 +4,35 @@
 #include <util/delay.h>
 
 void ultrasonic_init(void) {
-    TCCR1B |= (1 << CS11);
-    UTRIG_DDR |= (1 << UTRIG);
-    UECHO_DDR &= ~(1 << UECHO);
-    UTRIG_PORT &= ~(1 << UTRIG);
-}
+    PIN_OUTPUT(UTRIG);
+    PIN_INPUT(UECHO);
 
-void ultrasonic_trigger(void) {
-    UTRIG_PORT |= (1 << UTRIG);
-    _delay_us(10);
-    UTRIG_PORT &= ~(1 << UTRIG);
+    PIN_LOW(UTRIG);
+
+    TCCR1B |= (1 << CS11);
 }
 
 uint16_t ultrasonic_measure(void) {
-    ultrasonic_trigger();
-    while (!(UECHO_PIN & (1 << UECHO)));
+    PIN_LOW(UTRIG);
+    _delay_us(2);
+    PIN_HIGH(UTRIG);
+    _delay_us(10);
+    PIN_LOW(UTRIG);
+
+    uint32_t counter = 0;
+    while (!PIN_READ(UECHO)) {
+        counter++;
+        if (counter > 50000) return 0;
+    }
+
     TCNT1 = 0;
-    while (UECHO_PIN & (1 << UECHO));
-    return TCNT1 / 58;
+
+    counter = 0;
+    while (PIN_READ(UECHO)) {
+        counter++;
+        if (counter > 50000) return 0;
+        if (TCNT1 > 40000) break;
+    }
+
+    return TCNT1 / 116;
 }

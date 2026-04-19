@@ -68,14 +68,11 @@
 #define UTRIG C, 0
 #define UECHO C, 1
 
-// --- Ultrasonic Configuration ---
-#define UTRIG      PC0
-#define UTRIG_PORT PORTC
-#define UTRIG_PIN  PINC
-#define UTRIG_DDR  DDRC
-#define UECHO      PC1
-#define UECHO_PORT PORTC
-#define UECHO_PIN  PINC
-#define UECHO_DDR  DDRC
+/////////////////////////////////
+//      LED Configuration      //
+/////////////////////////////////
+#define LED1 B, 0
+#define LED2 B, 6
+#define LED3 B, 7
 
 #endif // CONFIG_H

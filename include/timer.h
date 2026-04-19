@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-extern volatile uint8_t  ms_timer_done;
+extern volatile uint8_t  timer_done;
 extern volatile uint16_t overflow_count;
 extern volatile uint16_t target_overflows;
 
