@@ -3,11 +3,20 @@
 #include <util/delay.h>
 
 void keypad_init(void) {
-    ROW_DDR |= (1 << ROW0) | (1 << ROW1) | (1 << ROW2) | (1 << ROW3);
-    COL_DDR &= ~((1 << COL0) | (1 << COL1) | (1 << COL2) | (1 << COL3));
-    ROW_PORT |= (1 << ROW0) | (1 << ROW1) | (1 << ROW2) | (1 << ROW3);
-    COL_PORT |= (1 << COL0) | (1 << COL1) | (1 << COL2) | (1 << COL3);
+    PIN_OUTPUT(ROW0); PIN_OUTPUT(ROW1); PIN_OUTPUT(ROW2); PIN_OUTPUT(ROW3);
+    PIN_INPUT(COL0);  PIN_INPUT(COL1);  PIN_INPUT(COL2);  PIN_INPUT(COL3);
+
+    PIN_HIGH(ROW0); PIN_HIGH(ROW1); PIN_HIGH(ROW2); PIN_HIGH(ROW3);
+    PIN_HIGH(COL0); PIN_HIGH(COL1); PIN_HIGH(COL2); PIN_HIGH(COL3);
 }
+
+#define CHECK_COL(col_macro, r, c)                                      \
+    if (!PIN_READ(col_macro)) {                                         \
+        _delay_ms(20);                                                  \
+        while (!PIN_READ(col_macro));                                   \
+        PIN_HIGH(ROW0); PIN_HIGH(ROW1); PIN_HIGH(ROW2); PIN_HIGH(ROW3); \
+        return keys[r][c];                                              \
+    }
 
 char keypad_scan(void) {
     char keys[4][4] = {
@@ -17,24 +26,21 @@ char keypad_scan(void) {
         {'*', '0', '#', 'D'}
     };
 
-    uint8_t rows[4] = { ROW0, ROW1, ROW2, ROW3 };
-    uint8_t cols[4] = { COL0, COL1, COL2, COL3 };
+    PIN_LOW(ROW0); _delay_us(10);
+    CHECK_COL(COL0, 0, 0); CHECK_COL(COL1, 0, 1); CHECK_COL(COL2, 0, 2); CHECK_COL(COL3, 0, 3);
+    PIN_HIGH(ROW0);
 
-    for (uint8_t r = 0; r < 4; r++) {
-        ROW_PORT &= ~(1 << rows[r]);
-        _delay_us(10);
+    PIN_LOW(ROW1); _delay_us(10);
+    CHECK_COL(COL0, 1, 0); CHECK_COL(COL1, 1, 1); CHECK_COL(COL2, 1, 2); CHECK_COL(COL3, 1, 3);
+    PIN_HIGH(ROW1);
 
-        for (uint8_t c = 0; c < 4; c++) {
-            if (!(COL_PIN & (1 << cols[c]))) {
-                _delay_ms(20);
-                while(!(COL_PIN & (1 << cols[c])));
-                ROW_PORT |= (1 << rows[r]);
-                return keys[r][c];
-            }
-        }
+    PIN_LOW(ROW2); _delay_us(10);
+    CHECK_COL(COL0, 2, 0); CHECK_COL(COL1, 2, 1); CHECK_COL(COL2, 2, 2); CHECK_COL(COL3, 2, 3);
+    PIN_HIGH(ROW2);
 
-        ROW_PORT |= (1 << rows[r]);
-    }
+    PIN_LOW(ROW3); _delay_us(10);
+    CHECK_COL(COL0, 3, 0); CHECK_COL(COL1, 3, 1); CHECK_COL(COL2, 3, 2); CHECK_COL(COL3, 3, 3);
+    PIN_HIGH(ROW3);
 
-    return 0;
+    return '\0';
 }

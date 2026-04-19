@@ -3,49 +3,70 @@
 
 #include <avr/io.h>
 
-// --- LCD Configuration ---
-#define LCD_RS         PB2
-#define LCD_RS_PORT    PORTB
-#define LCD_RS_DDR     DDRB
-#define LCD_EN         PB1
-#define LCD_EN_PORT    PORTB
-#define LCD_EN_DDR     DDRB
+// --- ADC Configuration ---
+#define ADC_REF_AVCC      (1 << REFS0)
+#define ADC_PRESCALER_128 ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
 
-#define LCD_DATA_PORT  PORTD
-#define LCD_DATA_DDR   DDRD
-#define LCD_DATA_START 0
+// --- I2C & RTC Configuration ---
+#define DS1307_ADDR 0xD0
+#define I2C_TIMEOUT 10000
+
+//////////////////////////////
+//      Macro Helper        //
+//////////////////////////////
+#define CONCAT(a, b) a ## b
+#define PORT_REG(port) CONCAT(PORT, port)
+#define DDR_REG(port)  CONCAT(DDR, port)
+#define PIN_REG(port)  CONCAT(PIN, port)
+
+#define EXPAND(x) x
+
+#define PIN_OUTPUT_IMPL(port, pin) DDR_REG(port) |= (1 << (pin))
+#define PIN_INPUT_IMPL(port, pin)  DDR_REG(port) &= ~(1 << (pin))
+#define PIN_HIGH_IMPL(port, pin)   PORT_REG(port) |= (1 << (pin))
+#define PIN_LOW_IMPL(port, pin)    PORT_REG(port) &= ~(1 << (pin))
+#define PIN_READ_IMPL(port, pin)   (PIN_REG(port) & (1 << (pin)))
+
+#define PIN_OUTPUT(...) EXPAND(PIN_OUTPUT_IMPL(__VA_ARGS__))
+#define PIN_INPUT(...)  EXPAND(PIN_INPUT_IMPL(__VA_ARGS__))
+#define PIN_HIGH(...)   EXPAND(PIN_HIGH_IMPL(__VA_ARGS__))
+#define PIN_LOW(...)    EXPAND(PIN_LOW_IMPL(__VA_ARGS__))
+#define PIN_READ(...)   EXPAND(PIN_READ_IMPL(__VA_ARGS__))
+
+//////////////////////////////////
+//      LCD Configuration       //
+//////////////////////////////////
+#define LCD_RS B, 2
+#define LCD_EN B, 1
+
+#define LCD_D4 D, 0
+#define LCD_D5 D, 1
+#define LCD_D6 D, 2
+#define LCD_D7 D, 3
 
 #define LCD_CMD_4BIT_MODE  0x28
 #define LCD_CMD_DISPLAY_ON 0x0C
 #define LCD_CMD_ENTRY_MODE 0x06
 #define LCD_CMD_CLEAR      0x01
 
+//////////////////////////////////
+//      Keypad Configuration    //
+//////////////////////////////////
+#define ROW0 C, 0
+#define ROW1 C, 1
+#define ROW2 C, 2
+#define ROW3 C, 3
 
-// --- ADC Configuration ---
-#define ADC_REF_AVCC      (1 << REFS0)
-#define ADC_PRESCALER_128 ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
+#define COL0 D, 4
+#define COL1 D, 5
+#define COL2 D, 6
+#define COL3 D, 7
 
-
-// --- I2C & RTC Configuration ---
-#define DS1307_ADDR 0xD0
-#define I2C_TIMEOUT 10000
-
-
-// --- Keypad Configuration ---
-#define ROW_PORT PORTC
-#define ROW_DDR  DDRC
-#define ROW0 PC0
-#define ROW1 PC1
-#define ROW2 PC2
-#define ROW3 PC3
-
-#define COL_PORT PORTD
-#define COL_DDR  DDRD
-#define COL_PIN  PIND
-#define COL0 PD4
-#define COL1 PD5
-#define COL2 PD6
-#define COL3 PD7
+/////////////////////////////////////////
+//      Ultrasonic Configuration       //
+/////////////////////////////////////////
+#define UTRIG C, 0
+#define UECHO C, 1
 
 // --- Ultrasonic Configuration ---
 #define UTRIG      PC0

@@ -1,22 +1,39 @@
 #include <avr/io.h>
-#include <util/delay.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "lcd.h"
-#include "ultrasonic.h"
+#include "keypad.h"
+#include "timer.h"
+// #include "ultrasonic.h"
 
 int main(void) {
+    sei();
+    keypad_init();
     lcd_init();
-    ultrasonic_init();
 
-    char buffer[16];
-
+    char prev = '\0';
+    int count = 0;
+    char buffer[20];
     while (1) {
-        uint16_t dist = ultrasonic_measure();
+        // char key = keypad_scan();
+        // if (key != prev) {
+        //     prev = key;
+        //     if (key != '\0') {
+        //         lcd_clear();
+        //         lcd_data(key);
+        //     }
+        // }
+
         lcd_clear();
-        itoa(dist, buffer, 10);
+        sprintf(buffer, "%d", count);
         lcd_display(buffer);
-        _delay_ms(500);
+        count++;
+
+        timer_wait_ms(500);
+
+        // lcd_clear();
+        // lcd_display("Hello, World!");
+        // _delay_ms(500);
     }
 
     return 0;
