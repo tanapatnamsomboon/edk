@@ -5,43 +5,42 @@
 #include "led.h"
 #include "keypad.h"
 #include "timer.h"
-// #include "ultrasonic.h"
+#include "ultrasonic.h"
 
 int main(void) {
     sei();
     keypad_init();
+    ultrasonic_init();
     lcd_init();
     led_init(3);
 
-    int index = 0;
-    int wait = 1000;
-    char key = '\0';
-    timer_delay_ms(wait);
+    char buffer[16];
+    uint16_t distance;
+
+    lcd_clear();
+    lcd_gotoxy(0, 0);
+    lcd_display("Ultrasonic Test");
+    timer_wait_ms(1000);
+    lcd_clear();
     while (1) {
-        key = keypad_scan();
-        if (key == '1') {
-            wait = 1000;
-        } else if (key == '2') {
-            wait = 500;
-        } else if (key == '3') {
-            wait = 100;
+        cli();
+        distance = ultrasonic_measure();
+        sei();
+        sprintf(buffer, "Dist: %3u cm", distance);
+
+        lcd_gotoxy(0, 0);
+        lcd_display(buffer);
+
+        lcd_gotoxy(0, 1);
+        if (distance < 10) {
+            lcd_display("Stat: TOO CLOSE");
+        } else if (distance > 100) {
+            lcd_display("Stat: TOO FAR  ");
+        } else {
+            lcd_display("Stat: NORMAL   ");
         }
 
-        if (timer_done) {
-            led_off(1);
-            led_off(2);
-            led_off(3);
-
-            led_on(index);
-
-            index++;
-            if (index > 3) {
-                index = 1;
-            }
-
-            timer_done = 0;
-            timer_delay_ms(wait);
-        }
+        timer_wait_ms(200);
     }
 
     return 0;
