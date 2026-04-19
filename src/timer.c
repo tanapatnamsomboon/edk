@@ -4,7 +4,7 @@ volatile uint8_t  timer_done  = 0;
 volatile uint16_t overflow_count = 0;
 volatile uint16_t target_overflows = 0;
 
-ISR(TIMER1_OVF_vect) {
+ISR(TIMER0_OVF_vect) {
     overflow_count++;
     if (overflow_count >= target_overflows) {
         TCCR0B = 0;
@@ -16,7 +16,7 @@ void timer_delay_ms(uint16_t milliseconds) {
     timer_done  = 0;
     overflow_count = 0;
 
-    target_overflows = (uint32_t)(milliseconds * 1000UL / 256) + 1;
+    target_overflows = ((uint32_t)milliseconds * 1000UL / 256) + 1;
 
     TCCR0A = 0;
     TCNT0  = 0;

@@ -3,10 +3,6 @@
 
 #include <avr/io.h>
 
-// --- ADC Configuration ---
-#define ADC_REF_AVCC      (1 << REFS0)
-#define ADC_PRESCALER_128 ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
-
 // --- I2C & RTC Configuration ---
 #define DS1307_ADDR 0xD0
 #define I2C_TIMEOUT 10000
@@ -48,6 +44,12 @@
 #define LCD_CMD_DISPLAY_ON 0x0C
 #define LCD_CMD_ENTRY_MODE 0x06
 #define LCD_CMD_CLEAR      0x01
+
+/////////////////////////////////
+//      ADC Configuration      //
+/////////////////////////////////
+#define ADC_REF_AVCC      (1 << REFS0)
+#define ADC_PRESCALER_128 ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0))
 
 //////////////////////////////////
 //      Keypad Configuration    //
