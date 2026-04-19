@@ -21,12 +21,14 @@
 #define PIN_INPUT_IMPL(port, pin)  DDR_REG(port) &= ~(1 << (pin))
 #define PIN_HIGH_IMPL(port, pin)   PORT_REG(port) |= (1 << (pin))
 #define PIN_LOW_IMPL(port, pin)    PORT_REG(port) &= ~(1 << (pin))
+#define PIN_TOGGLE_IMPL(port, pin) PORT_REG(port) ^= (1 << (pin))
 #define PIN_READ_IMPL(port, pin)   (PIN_REG(port) & (1 << (pin)))
 
 #define PIN_OUTPUT(...) EXPAND(PIN_OUTPUT_IMPL(__VA_ARGS__))
 #define PIN_INPUT(...)  EXPAND(PIN_INPUT_IMPL(__VA_ARGS__))
 #define PIN_HIGH(...)   EXPAND(PIN_HIGH_IMPL(__VA_ARGS__))
 #define PIN_LOW(...)    EXPAND(PIN_LOW_IMPL(__VA_ARGS__))
+#define PIN_TOGGLE(...) EXPAND(PIN_TOGGLE_IMPL(__VA_ARGS__))
 #define PIN_READ(...)   EXPAND(PIN_READ_IMPL(__VA_ARGS__))
 
 //////////////////////////////////
@@ -73,8 +75,14 @@
 /////////////////////////////////
 //      LED Configuration      //
 /////////////////////////////////
-#define LED1 B, 0
-#define LED2 B, 6
+#define LED1 B, 1
+#define LED2 B, 2
 #define LED3 B, 7
+
+//////////////////////////////////
+//      Button Configuration    //
+//////////////////////////////////
+#define BTN1 D, 2
+#define BTN2 D, 3
 
 #endif // CONFIG_H

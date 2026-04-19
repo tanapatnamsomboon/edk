@@ -11,5 +11,6 @@ void lcd_commit(void);
 void lcd_clear(void);
 void lcd_display(char* str);
 void lcd_gotoxy(uint8_t x, uint8_t y);
+void lcd_test();
 
 #endif // LCD_H

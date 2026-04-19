@@ -1,6 +1,6 @@
 #include "lcd.h"
 #include "config.h"
-#include <util/delay.h>
+#include "timer.h"
 
 void lcd_init(void) {
     PIN_OUTPUT(LCD_RS);
@@ -10,12 +10,12 @@ void lcd_init(void) {
     PIN_OUTPUT(LCD_D6);
     PIN_OUTPUT(LCD_D7);
 
-    _delay_ms(50);
+    timer_wait_ms(50);
 
-    lcd_send_nibble(0x03); _delay_ms(5);
-    lcd_send_nibble(0x03); _delay_ms(5);
-    lcd_send_nibble(0x03); _delay_ms(5);
-    lcd_send_nibble(0x02); _delay_ms(5);
+    lcd_send_nibble(0x03); timer_wait_ms(5);
+    lcd_send_nibble(0x03); timer_wait_ms(5);
+    lcd_send_nibble(0x03); timer_wait_ms(5);
+    lcd_send_nibble(0x02); timer_wait_ms(5);
 
 
     lcd_command(LCD_CMD_4BIT_MODE);
@@ -36,27 +36,27 @@ void lcd_command(uint8_t cmd) {
     PIN_LOW(LCD_RS);
     lcd_send_nibble(cmd >> 4);
     lcd_send_nibble(cmd);
-    _delay_ms(2);
+    timer_wait_ms(2);
 }
 
 void lcd_data(uint8_t data) {
     PIN_HIGH(LCD_RS);
     lcd_send_nibble(data >> 4);
     lcd_send_nibble(data);
-    _delay_us(50);
+    timer_wait_us(50);
 }
 
 void lcd_commit() {
     PIN_HIGH(LCD_EN);
-    _delay_us(50);
+    timer_wait_us(50);
 
     PIN_LOW(LCD_EN);
-    _delay_us(50);
+    timer_wait_us(50);
 }
 
 void lcd_clear() {
     lcd_command(LCD_CMD_CLEAR);
-    _delay_ms(20);
+    timer_wait_ms(20);
 }
 
 void lcd_display(char* str) {
@@ -69,4 +69,10 @@ void lcd_display(char* str) {
 void lcd_gotoxy(uint8_t x, uint8_t y) {
     uint8_t addr = (y == 0) ? 0x80 : 0xC0;
     lcd_command(addr + x);
+}
+
+void lcd_test() {
+    lcd_clear();
+    lcd_display("Hello, World!");
+    timer_wait_ms(1000);
 }
