@@ -85,4 +85,9 @@
 #define BTN1 D, 2
 #define BTN2 D, 3
 
+/////////////////////////////////
+//      DHT Configuration      //
+/////////////////////////////////
+#define DHT_PIN B, 0
+
 #endif // CONFIG_H
